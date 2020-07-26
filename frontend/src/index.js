@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import Routes from './routes'
 import { ApolloClient, InMemoryCache, gql, ApolloProvider } from '@apollo/client';
+import 'semantic-ui-css/semantic.min.css'
 
 const client = new ApolloClient({
   uri: 'http://localhost:8080/graphql',
@@ -26,8 +27,6 @@ const App = (
     <Routes/>
   </ApolloProvider>
 );
-
-
 
 ReactDOM.render(App,
   document.getElementById('root')
