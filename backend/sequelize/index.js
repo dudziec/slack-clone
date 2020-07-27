@@ -17,11 +17,12 @@ for (const modelDefiner of modelDefiners) {
 	modelDefiner(sequelize)
 }
 
-
 Object.keys(sequelize.models).forEach((modelName) => {
 	if ('associate' in sequelize.models[modelName]) {
 		sequelize.models[modelName].associate(sequelize.models);
 	}
   });
 
-export default sequelize;
+const models = {...sequelize.models, sequelize: sequelize, Sequelize: Sequelize };
+
+export { sequelize, models };

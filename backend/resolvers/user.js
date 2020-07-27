@@ -1,25 +1,39 @@
 import bcrypt from 'bcrypt'
+import _ from 'lodash'
+
+const formatErrors = (e, models) => {
+    if (e.name === 'SequelizeValidationError') {
+      return e.errors.map(x => _.pick(x, ['path', 'message']));
+    }
+    return [{ path: 'name', message: 'something went wrong' }];
+  };
 
 export default {
     Query: {
-        getUser: (parent, { id }, { models }, info) => models.user.findOne({ where: { id } }),
-        allUsers: (parent, args, { models }, info) => models.user.findAll(),
+        getUser: (parent, { id }, { models }) => models.user.findOne({ where: { id } }),
+        allUsers: (parent, args, { models }) => models.user.findAll(),
     }, 
     Mutation: {
         register: async (parent, {username, email, password }, {models}) => {
-            try {
+            try { 
                 const hashedPassword = await bcrypt.hash(password, 12);
-                await models.user.create({
+                const createdUser = await models.user.create({
                     username: username,
                     email: email, 
                     password: hashedPassword,
                 });
 
-                return true 
+                return {
+                    ok: true,
+                    user: createdUser,
+                } 
                 
             } catch(err) {
                 console.log(err);
-                return false;
+                return {
+                    ok: false,
+                    errors: formatErrors(err, models),
+                }
             }
             return 
         },
