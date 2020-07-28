@@ -22,7 +22,7 @@ export default observer(class Login extends React.Component {
     constructor(props) {
         super(props);
 
-        
+
 
         extendObservable(this, {
             email: '',
@@ -32,8 +32,6 @@ export default observer(class Login extends React.Component {
 
     onSubmit = () => {
         const { email, password } = this;
-        console.log(email);
-        console.log(password);
     }
 
     onChange = e => {
