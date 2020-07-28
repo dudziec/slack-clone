@@ -22,8 +22,6 @@ export default observer(class Login extends React.Component {
     constructor(props) {
         super(props);
 
-
-
         extendObservable(this, {
             email: '',
             password: '',
@@ -67,5 +65,4 @@ export default observer(class Login extends React.Component {
             </Form>
         </Container>)
     }
-
 });
