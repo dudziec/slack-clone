@@ -6,11 +6,16 @@ import path from 'path';
 
 const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, './schema')), { all: true });
 const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, './resolvers')));
+const SECRET = 'dsadamsofasbnfasnfpasuin1231218hfdsa123';
+const SECRET2 = '3213124fpdaf,mp142x=ac.qawskr12-41124';
 
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: { models, user: { id: 1 }}
+    context: { 
+        models, 
+        SECRET,
+        user: { id: 1 }}
 });
 
 const APP = express();
