@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import bcrypt from 'bcrypt';
 
 module.exports = (sequelize) => {
     const User = sequelize.define('user', {
@@ -33,9 +34,18 @@ module.exports = (sequelize) => {
                     args: [8, 100],
                     msg: 'The password needs to be between 8 and 100 characters long',
                 },
-            }
+            },
         },
-    });
+    },
+        {
+            hooks: {
+              afterValidate: async(user) => {
+                  const hashedPassword = await bcrypt.hash(user.password, 12);
+                  user.password = hashedPassword;
+              }
+           },
+        }
+    );
 
     User.associate = (models) => {
         User.belongsToMany(models.team, {

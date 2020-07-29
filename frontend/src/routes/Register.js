@@ -40,33 +40,31 @@ const Register = () => {
                 />
             }
             <Form>
-                <Form.Field>
+                <Form.Field error={user.usernameError !== ''}>
                     <Header as='h2'>Username</Header>
                     <Input 
                         fluid
                         value={user.username} 
                         onChange={e => setUser( {...user, username: e.target.value} )} 
-                        error={!!user.usernameError}
+                        
                         placeholder="Username"/>
                 </Form.Field>
-                <Form.Field>
+                <Form.Field error={user.emailError !== ''}>
                     <Header as='h2'>E-Mail</Header>
                     <Input 
                         fluid
                         value={user.email} 
                         onChange={e => setUser( {...user, email: e.target.value} )} 
                         placeholder="E-Mail" 
-                        error={!!user.emailError}
                         type="email"/>
                 </Form.Field>
-                <Form.Field>
+                <Form.Field error={user.passwordError !== ''}>
                     <Header as='h2'>Password</Header>
                     <Input 
                         fluid
                         value={user.password} 
                         onChange={e => setUser( {...user, password: e.target.value} )} 
-                        placeholder="Password" 
-                        error={!!user.passwordError}
+                        placeholder="Password"
                         type="password"/>
                 </Form.Field>
                 <Button primary type='submit' onClick={async(e) => {
@@ -87,7 +85,6 @@ const Register = () => {
 
                             setUser({...user, ...err});
                         }
-        
                     });
                 }}>Submit</Button>
             </Form>
