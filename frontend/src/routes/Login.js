@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocalStore, useObserver } from 'mobx-react-lite'
-import { Form, Button, Container, Input, Header } from 'semantic-ui-react';
+import { Form, Button, Container, Input, Header, Message } from 'semantic-ui-react';
 import { gql, useMutation } from '@apollo/client';
 import { useHistory } from 'react-router-dom';
 
@@ -22,6 +22,10 @@ const Login = () => {
     const store = useLocalStore(() => ({
         email: '',
         password: '',
+        errors: {
+            emailError: '',
+            passwordError: '',
+        },
     }));
 
     const [registerMutation] = useMutation(LOGIN_MUTATION);
@@ -29,9 +33,16 @@ const Login = () => {
 
     return useObserver( () => (
         <Container text fluid> 
+        { (store.errors.emailError || store.errors.passwordError) && 
+            <Message
+                error
+                header='There was some errors with your submission'
+                list={[store.errors.emailError, store.errors.passwordError].filter(x => x)}
+            />
+        }
         <Header as='h1'>Login</Header>
         <Form>
-            <Form.Field>
+            <Form.Field error={store.errors.emailError !== ''}>
                 <Input 
                     name="email"
                     fluid
@@ -42,7 +53,7 @@ const Login = () => {
                     placeholder="E-Mail" 
                     type="email"/>
             </Form.Field>
-            <Form.Field>
+            <Form.Field error={store.errors.passwordError !== ''}>
                 <Input 
                     name="password"
                     fluid
@@ -65,6 +76,17 @@ const Login = () => {
                         localStorage.setItem('token', token);
                         localStorage.setItem('refreshToken', refreshToken);
                         history.push('/');
+                    } else {
+                        const err = {
+                            emailError: '',
+                            passwordError: '',
+                        };
+
+                        errors.forEach(({ path, message }) => {
+                            err[`${path}Error`] = message;
+                        });
+
+                        store.errors = err;
                     }
                     
                 }}

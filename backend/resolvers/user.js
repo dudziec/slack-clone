@@ -16,14 +16,9 @@ export default {
     }, 
     Mutation: {
         login: (parent, {email, password}, {models, SECRET, SECRET2 }) => tryLogin(email, password, models, SECRET, SECRET2),
-        register: async (parent, {username, email, password }, {models}) => {
+        register: async (parent, args, {models}) => {
             try { 
-                const hashedPassword = await bcrypt.hash(password, 12);
-                const createdUser = await models.user.create({
-                    username: username,
-                    email: email, 
-                    password: hashedPassword,
-                });
+                const createdUser = await models.user.create(args);
 
                 return {
                     ok: true,
