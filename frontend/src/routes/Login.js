@@ -68,9 +68,7 @@ const Login = () => {
                         email, password
                     }});
 
-                    console.log(response);
                     const { ok, token, refreshToken, errors } = response.data.login;
-
                     
                     if(ok) {
                         localStorage.setItem('token', token);

@@ -3,22 +3,57 @@ import express from 'express'
 import { sequelize, models } from './sequelize';
 import {mergeResolvers, loadFilesSync, mergeTypeDefs } from 'graphql-tools'
 import path from 'path';
+import jwt from 'jsonwebtoken'
+import { refreshTokens } from './auth';
+import { log } from 'console';
 
 const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, './schema')), { all: true });
 const resolvers = mergeResolvers(loadFilesSync(path.join(__dirname, './resolvers')));
 const SECRET = 'dsadamsofasbnfasnfpasuin1231218hfdsa123';
 const SECRET2 = '3213124fpdaf,mp142x=ac.qawskr12-41124';
 
+const addUser = async (req, res, next) => {
+    const token = req.headers['x-token'];
+    console.log(`Token: ${token}`)
+    if(token) {
+        try {
+            const { user } = jwt.verify(token, SECRET);
+            console.log(`User ${user}`);
+            req.user = user;
+        } catch(err) {
+            const refreshToken = req.headers['x-refresh-token'];
+            const newTokens = await refreshTokens(token, refreshToken, models, SECRET);
+
+            if(newTokens.token && newTokens.refreshToken) {
+                res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token');
+                res.set('x-token', newTokens.token);
+                res.set('x-refresh-token', newTokens.refreshToken);
+            }
+
+            req.user = newTokens.user;
+        }
+    }
+
+    console.log("wtf")
+    next();
+}
+
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: { 
+    context: ({ req }) => (
+        { 
         models, 
         SECRET,
-        user: { id: 1 }}
+        user: req.user,
+    })
 });
 
 const APP = express();
+
+
+
+APP.use(addUser);
 
 server.applyMiddleware({
     app: APP
