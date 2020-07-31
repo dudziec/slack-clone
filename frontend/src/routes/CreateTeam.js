@@ -47,8 +47,15 @@ const CreateTeam = () => {
                 <Button onClick={async() => {
                     const { name } = store
 
-                    const response = await registerMutation({variables: {name}});
+                    let response = null;
 
+                    try {
+                        response = await registerMutation({variables: {name}});
+                    } catch (err) {
+                        history.push('/login');
+                        return;
+                    }
+                    
                     const { ok, errors } = response.data.createTeam;
 
                     if(ok) {
