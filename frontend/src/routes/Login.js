@@ -71,6 +71,7 @@ const Login = () => {
                     const { ok, token, refreshToken, errors } = response.data.login;
                     
                     if(ok) {
+                        console.log("login.js");
                         localStorage.setItem('token', token);
                         localStorage.setItem('refreshToken', refreshToken);
                         history.push('/');

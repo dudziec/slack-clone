@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import Routes from './routes'
-import { ApolloClient, InMemoryCache, gql, ApolloProvider, createHttpLink, ApolloLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql, ApolloProvider, createHttpLink, ApolloLink, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import 'semantic-ui-css/semantic.min.css'
 
@@ -12,11 +12,24 @@ const httpLink = createHttpLink({
 
 const afterwareLink = new ApolloLink((operation, forward) => {
   return forward(operation).map(response => {
-      const token = response.headers.get('x-token');
-      const refreshToken = response.headers.get('x-refresh-token');
+    const context = operation.getContext();
 
-      token ?? localStorage.setItem('token', token);
-      refreshToken ?? localStorage.setItem('x-refresh-token', refreshToken);
+    const { response: { headers }} = context;
+
+    if(headers) {
+      const token = headers.get('x-token');
+      const refreshToken = headers.get('x-refresh-token');
+
+      if(token) {
+        localStorage.setItem('token', token);
+      }
+
+      if(refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+    } 
+      
+      return response;
   })
 })
 
@@ -24,6 +37,7 @@ const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const token = localStorage.getItem('token');
   const refreshToken = localStorage.getItem('refreshToken');
+
   // return the headers to the context so httpLink can read them
   return {
     headers: {
@@ -35,7 +49,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([authLink, afterwareLink, httpLink]),
   cache: new InMemoryCache()
 });
 
