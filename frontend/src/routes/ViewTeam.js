@@ -1,22 +1,14 @@
 import React from 'react';
-import Channels from '../components/Channels';
-import Teams from '../components/Teams';
 import Header from '../components/Header';
 import Messages from '../components/Messages';
-import Input from '../components/SendMessage';
 import AppLayout from '../components/AppLayout';
 import SendMessage from '../components/SendMessage';
+import SideBar from '../containers/Sidebar';
 
-const ViewTeam = () => {
+const ViewTeam = ({match: { params }}) => {
     return (
         <AppLayout>
-        <Teams teams={[{id: 1, letter: 'S'}]}/>
-        <Channels
-            teamName="Team name"
-            username="Username"
-            channels={[{id: 1, name: 'general'}, {id: 2, name: 'random random'}]}
-            users={[{id: 1, name: 'slackbot'}]}
-        />
+        <SideBar currentTeamId={params.teamId}/>
         <Header channelName="general"/>
         <Messages>
           <ul className="message-list">

@@ -8,6 +8,9 @@ const CREATE_TEAM_MUTATION = gql`
     mutation($name: String!) {
     createTeam(name: $name) {
         ok,
+        team {
+            id
+        }
         errors{
         path,
         message
@@ -46,7 +49,6 @@ const CreateTeam = () => {
                 </Form.Field>
                 <Button onClick={async() => {
                     const { name } = store
-
                     let response = null;
 
                     try {
@@ -56,10 +58,10 @@ const CreateTeam = () => {
                         return;
                     }
                     
-                    const { ok, errors } = response.data.createTeam;
+                    const { ok, team, errors }= response.data.createTeam;  
 
                     if(ok) {
-                        history.push('/');
+                       history.push(`/view-team/${team.id}`);
                     } else {
                         const err = {
                             nameError: '',

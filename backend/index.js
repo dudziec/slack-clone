@@ -14,11 +14,9 @@ const SECRET2 = '3213124fpdaf,mp142x=ac.qawskr12-41124';
 
 const addUser = async (req, res, next) => {
     const token = req.headers['x-token'];
-    console.log(`Token: ${token}`)
     if(token) {
         try {
             const { user } = jwt.verify(token, SECRET);
-            console.log(`User ${user}`);
             req.user = user;
         } catch(err) {
             const refreshToken = req.headers['x-refresh-token'];
@@ -33,8 +31,7 @@ const addUser = async (req, res, next) => {
             req.user = newTokens.user;
         }
     }
-
-    console.log("wtf")
+    
     next();
 }
 
