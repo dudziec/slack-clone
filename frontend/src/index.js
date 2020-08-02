@@ -62,8 +62,7 @@ client
       }
     }
     `
-  })
-  .then(result => console.log(result));
+  });
 
 const App = (
   <ApolloProvider client={client}>
