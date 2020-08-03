@@ -9,6 +9,5 @@ export default `
 
     type Mutation {
         createChannel(teamId: Int!, name: String!, public: Boolean=false): Channel!,
-
     }
 `;  

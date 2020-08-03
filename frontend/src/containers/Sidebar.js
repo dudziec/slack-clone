@@ -66,6 +66,7 @@ const Sidebar = ({ currentTeamId }) => {
             
         />,
         <AddChannelModal 
+            teamId={currentTeamId}
             open={modal} 
             onClose={handleAddChannelModal} 
             key="sidebar-add-channel-modal"
