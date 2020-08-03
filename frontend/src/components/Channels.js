@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Icon } from 'semantic-ui-react';
+import React from "react";
+import styled from "styled-components";
+import { Icon } from "semantic-ui-react";
 
 const ChannelWrapper = styled.div`
   grid-column: 2;
@@ -20,32 +20,40 @@ const SideBarList = styled.ul`
   padding-left: 0px;
 `;
 
-const paddingLeft = 'padding-left: 10px';
+const paddingLeft = "padding-left: 10px";
 
 const SideBarListItem = styled.li`
-    padding: 2px;
-    ${paddingLeft};
-    &:hover {
-      background: #3e313c;
-    }
+  padding: 2px;
+  ${paddingLeft};
+  &:hover {
+    background: #3e313c;
+  }
 `;
 
-const SideBarListHeader = styled.li`${paddingLeft};`;
+const SideBarListHeader = styled.li`
+  ${paddingLeft};
+`;
 
-const PushLeft = styled.div`${paddingLeft};`;
+const PushLeft = styled.div`
+  ${paddingLeft};
+`;
 
-const Green = styled.span`color: #38978d;`;
+const Green = styled.span`
+  color: #38978d;
+`;
 
-const Bubble = ({ on = true }) => (on ? <Green>●</Green> : '○');
+const Bubble = ({ on = true }) => (on ? <Green>●</Green> : "○");
 
-const channel = ({ id, name }) => <SideBarListItem key={`channel-${id}`}># {name}</SideBarListItem>;
+const channel = ({ id, name }) => (
+  <SideBarListItem key={`channel-${id}`}># {name}</SideBarListItem>
+);
 
 const user = ({ id, name }) => (
   <SideBarListItem key={`user-${id}`}>
     <Bubble /> {name}
   </SideBarListItem>
 );
-export default ({teamName, username, channels, users, onAddChannelClick })  => (
+export default ({ teamName, username, channels, users, onAddChannelClick }) => (
   <ChannelWrapper>
     <PushLeft>
       <TeamNameHeader>{teamName}</TeamNameHeader>
@@ -53,7 +61,9 @@ export default ({teamName, username, channels, users, onAddChannelClick })  => (
     </PushLeft>
     <div>
       <SideBarList>
-        <SideBarListHeader>Channels <Icon onClick={onAddChannelClick} name="add circle"/></SideBarListHeader>
+        <SideBarListHeader>
+          Channels <Icon onClick={onAddChannelClick} name="add circle" />
+        </SideBarListHeader>
         {channels.map(channel)}
       </SideBarList>
     </div>
