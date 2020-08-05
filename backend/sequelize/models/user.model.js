@@ -49,7 +49,7 @@ module.exports = (sequelize) => {
 
     User.associate = (models) => {
         User.belongsToMany(models.team, {
-            through: 'member',
+            through: models.member,
             foreignKey: {
                 name: 'userId',
                 field: 'user_id',

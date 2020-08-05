@@ -1,6 +1,6 @@
-import React from 'react'
-import styled from 'styled-components';
-import { Header } from 'semantic-ui-react'
+import React from "react";
+import styled from "styled-components";
+import { Header } from "semantic-ui-react";
 
 const HeaderWrapper = styled.div`
   grid-column: 3;
@@ -8,7 +8,7 @@ const HeaderWrapper = styled.div`
 `;
 
 export default ({ channelName }) => (
-    <HeaderWrapper>
-        <Header textAlign="center">{`#${channelName}`}</Header>
-    </HeaderWrapper>
+  <HeaderWrapper>
+    <Header textAlign="center">{`#${channelName}`}</Header>
+  </HeaderWrapper>
 );

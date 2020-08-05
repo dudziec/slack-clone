@@ -11,6 +11,7 @@ const modelDefiners = [
 	require('./models/channel.model'),
 	require('./models/message.model'),
 	require('./models/team.model'),
+	require('./models/member.model'),
 ];
 
 for (const modelDefiner of modelDefiners) {
