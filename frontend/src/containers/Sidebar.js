@@ -1,38 +1,13 @@
 import React, { useState } from "react";
-import { gql, useQuery } from "@apollo/client";
 import Channels from "../components/Channels";
 import Teams from "../components/Teams";
-import _ from "lodash";
 import decode from "jwt-decode";
 import AddChannelModal from "../components/AddChannelModal";
+import InvitePeopleModal from "../components/InvitePeopleModal";
 
-const ALL_TEAMS_QUERY = gql`
-  query {
-    allTeams {
-      id
-      name
-      channels {
-        id
-        name
-      }
-    }
-  }
-`;
-
-const Sidebar = ({ currentTeamId }) => {
-  const { loading, data } = useQuery(ALL_TEAMS_QUERY);
+const Sidebar = ({ teams, team }) => {
   const [modal, setModal] = useState(false);
-
-  if (loading) {
-    return null;
-  }
-
-  const allTeams = data.allTeams;
-  const teamIdx = currentTeamId
-    ? _.findIndex(allTeams, ["id", parseInt(currentTeamId, 10)])
-    : 0;
-
-  const team = allTeams[teamIdx];
+  const [invitePeopleModal, setInvitePeopleModal] = useState(false);
 
   let username = "";
 
@@ -50,19 +25,23 @@ const Sidebar = ({ currentTeamId }) => {
     setModal(false);
   };
 
+  const handleOnInvitePeople = () => {
+    setInvitePeopleModal(true);
+  }
+
+  const handleCloseInvitePeople = () => {
+    setInvitePeopleModal(false);
+  }
+
   return [
-    <Teams
-      key="sidebar-teams"
-      teams={allTeams.map((t) => ({
-        id: t.id,
-        letter: t.name.charAt(0).toUpperCase(),
-      }))}
-    />,
+    <Teams key="sidebar-teams" teams={teams} />,
     <Channels
       key="sidebar-channels"
       teamName={team.name}
       username={username}
       channels={team.channels}
+      onInvitePeople={handleOnInvitePeople}
+      teamId={team.id}
       users={[{ id: 1, name: "slackbot" }]}
       onAddChannelClick={handleAddChannelClick}
     />,
@@ -72,6 +51,12 @@ const Sidebar = ({ currentTeamId }) => {
       onClose={handleAddChannelModal}
       key="sidebar-add-channel-modal"
     />,
+    <InvitePeopleModal
+      teamId={team.id}
+      open={invitePeopleModal}
+      onClose={handleCloseInvitePeople}
+      key="sidebar-invite-people-modal"
+  />,
   ];
 };
 

@@ -7,8 +7,14 @@ export default `
         users: [User!]!
     }
 
+    type CreateChannelResponse {
+        ok: Boolean!,
+        channel: Channel,
+        errors: [Error!],
+    }
+
     type Mutation {
-        createChannel(teamId: Int!, name: String!, public: Boolean=false): Channel!,
+        createChannel(teamId: Int!, name: String!, public: Boolean=false): CreateChannelResponse!,
 
     }
 `;  
