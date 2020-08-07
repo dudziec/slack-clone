@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, Button, Form, Input } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { useMutation, gql } from "@apollo/client";
+import normalizeErrors from '../normalizeErrors'
 
 const ADD_TEAM_MEMBER_MUTATION = gql`
   mutation addMember($email: String!, $teamId: Int!) {
@@ -22,7 +23,7 @@ const InvitePeopleModal = ({ open, onClose, teamId }) => {
     initialValues: {
       name: "",
     },
-    onSubmit: async (values) => {
+    onSubmit: async (values ) => {
         const response = await registerMutation({
             variables: {
               teamId: teamId,
@@ -31,8 +32,18 @@ const InvitePeopleModal = ({ open, onClose, teamId }) => {
           });
 
           console.log(response);
+          
+          const { ok, errors } = response.data.addTeamMember;
+
+          if(ok) {
+            onClose();
+          } else {
+            formik.setErrors(normalizeErrors(errors));
+          }
     },
   });
+
+  
 
   return (
     <Modal open={open} closeIcon onClose={onClose}>
@@ -47,11 +58,12 @@ const InvitePeopleModal = ({ open, onClose, teamId }) => {
               placeholder="Email"
             />
           </Form.Field>
+          {formik.touched.email && formik.errors.email ? formik.errors.email[0] : null}
           <Form.Group>
             <Button type="submit" onClick={formik.handleSubmit} primary fluid>
               Create channel
             </Button>
-            <Button negative fluid>
+            <Button negative fluid onClick={onClose}>
               Cancel
             </Button>
           </Form.Group>

@@ -46,7 +46,9 @@ const Green = styled.span`
 const Bubble = ({ on = true }) => (on ? <Green>●</Green> : "○");
 
 const channel = ({ id, name }, teamId) => (
-  <SideBarListItem key={`channel-${id}`}><Link to={`/view-team/${teamId}/${id}`}># {name}</Link></SideBarListItem>
+  <SideBarListItem key={`channel-${id}`}>
+    <Link to={`/view-team/${teamId}/${id}`}># {name}</Link>
+  </SideBarListItem>
 );
 
 const user = ({ id, name }) => (
@@ -54,7 +56,17 @@ const user = ({ id, name }) => (
     <Bubble /> {name}
   </SideBarListItem>
 );
-export default ({ teamName, username, channels, users, onAddChannelClick, teamId, onInvitePeople }) => (
+
+export default ({
+  teamName,
+  username,
+  channels,
+  users,
+  onAddChannelClick,
+  teamId,
+  onInvitePeople,
+  isOwner,
+}) => (
   <ChannelWrapper>
     <PushLeft>
       <TeamNameHeader>{teamName}</TeamNameHeader>
@@ -74,11 +86,12 @@ export default ({ teamName, username, channels, users, onAddChannelClick, teamId
         {users.map(user)}
       </SideBarList>
     </div>
-
+  {isOwner && (
     <div>
       <a href="#invitePeople" onClick={onInvitePeople}>
-      + invite people
+        + invite people
       </a>
     </div>
+  )}
   </ChannelWrapper>
 );

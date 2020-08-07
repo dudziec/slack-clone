@@ -10,27 +10,27 @@ const Sidebar = ({ teams, team }) => {
   const [invitePeopleModal, setInvitePeopleModal] = useState(false);
 
   let username = "";
+  let isOwner = false;
 
   try {
     const token = localStorage.getItem("token");
     const { user } = decode(token);
     username = user.username;
+    isOwner = team.owner === user.id;
   } catch (err) {}
 
-  const handleAddChannelClick = () => {
-    setModal(true);
+  const toggleAddChannelModal = (e) => {
+    if(e) {
+      e.preventDefault();
+    }
+    setModal(!modal);
   };
 
-  const handleAddChannelModal = () => {
-    setModal(false);
-  };
-
-  const handleOnInvitePeople = () => {
-    setInvitePeopleModal(true);
-  }
-
-  const handleCloseInvitePeople = () => {
-    setInvitePeopleModal(false);
+  const toggleOnInvitePeople = (e) => {
+    if(e) {
+      e.preventDefault();
+    }
+    setInvitePeopleModal(!invitePeopleModal);
   }
 
   return [
@@ -40,21 +40,22 @@ const Sidebar = ({ teams, team }) => {
       teamName={team.name}
       username={username}
       channels={team.channels}
-      onInvitePeople={handleOnInvitePeople}
+      isOwner={isOwner}
+      onInvitePeople={toggleOnInvitePeople}
       teamId={team.id}
       users={[{ id: 1, name: "slackbot" }]}
-      onAddChannelClick={handleAddChannelClick}
+      onAddChannelClick={toggleAddChannelModal}
     />,
     <AddChannelModal
       teamId={team.id}
       open={modal}
-      onClose={handleAddChannelModal}
+      onClose={toggleAddChannelModal}
       key="sidebar-add-channel-modal"
     />,
     <InvitePeopleModal
       teamId={team.id}
       open={invitePeopleModal}
-      onClose={handleCloseInvitePeople}
+      onClose={toggleOnInvitePeople}
       key="sidebar-invite-people-modal"
   />,
   ];
