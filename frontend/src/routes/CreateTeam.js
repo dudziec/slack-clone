@@ -64,14 +64,14 @@ const CreateTeam = () => {
             try {
               response = await registerMutation({ variables: { name } });
             } catch (err) {
-              history.push("/login");
+              //history.push("/login");
               return;
             }
 
             const { ok, team, errors } = response.data.createTeam;
-
             if (ok) {
               history.push(`/view-team/${team.id}`);
+              return;
             } else {
               const err = {
                 nameError: "",
@@ -80,7 +80,6 @@ const CreateTeam = () => {
               errors.forEach(({ path, message }) => {
                 err[`${path}Error`] = message;
               });
-              console.log(err);
               store.errors = err;
             }
           }}

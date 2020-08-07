@@ -29,22 +29,34 @@ const AddChannelModal = ({ open, onClose, teamId }) => {
       name: "",
     },
     onSubmit: async (values) => {
-      const { data: { createChannel: { channel }}}  = await registerMutation({
+      const response = await registerMutation({
         variables: {
           teamId: teamId,
           name: values.name,
         },
       });
 
-      const data = client.readQuery({ query: ALL_TEAMS_QUERY });
-      const writeData = _.cloneDeep(data);
+      console.log(response);
 
-      const teamIdx = findIndex(data.allTeams, ['id', teamId]);
-      writeData.allTeams[teamIdx].channels.push(channel);
+      const {
+        data: {
+          createChannel: { ok, channel, errors },
+        },
+      } = response;
 
-      client.writeQuery({query: ALL_TEAMS_QUERY, data: writeData});
-
-      onClose();
+      if(ok) {
+        const data = client.readQuery({ query: ALL_TEAMS_QUERY });
+        const writeData = _.cloneDeep(data);
+  
+        const teamIdx = findIndex(data.allTeams, ["id", teamId]);
+        writeData.allTeams[teamIdx].channels.push(channel);
+  
+        client.writeQuery({ query: ALL_TEAMS_QUERY, data: writeData });
+  
+        onClose();
+      } else {
+        
+      }
     },
   });
 
@@ -65,7 +77,7 @@ const AddChannelModal = ({ open, onClose, teamId }) => {
             <Button type="submit" onClick={formik.handleSubmit} primary fluid>
               Create channel
             </Button>
-            <Button negative fluid>
+            <Button negative fluid onClick={onClose}>
               Cancel
             </Button>
           </Form.Group>

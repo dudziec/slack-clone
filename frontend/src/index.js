@@ -53,7 +53,7 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       "x-token": token ? `${token}` : "",
-      "x-refresh-oken": token ? `${refreshToken}` : "",
+      "x-refresh-token": token ? `${refreshToken}` : "",
     },
   };
 });

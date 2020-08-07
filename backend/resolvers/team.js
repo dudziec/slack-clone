@@ -8,6 +8,17 @@ export default {
 
       return models.team.findAll({ where: { owner: user.id } });
     },
+    inviteTeams: (parent, args, { models, user }) => {
+      if (!user) throw new AuthenticationError("You must be logged in!");
+
+      models.sequelize.query(
+        "select * from teams join members on id = team_id where user_id = ?",
+        {
+          replacements: [user.id],
+          model: models.team,
+        }
+      );
+    },
   },
 
   Mutation: {
@@ -32,15 +43,15 @@ export default {
           };
         }
 
-        if(!userToAdd) {
-            return {
-                ok: false,
-                errors: [
-                  { path: "email", message: "Could not find user with this email" },
-                ],
-              };
+        if (!userToAdd) {
+          return {
+            ok: false,
+            errors: [
+              { path: "email", message: "Could not find user with this email" },
+            ],
+          };
         }
-        
+
         await models.member.create({ userId: userToAdd.id, teamId });
 
         return {
@@ -56,17 +67,23 @@ export default {
     createTeam: async (parent, args, { models, user }) => {
       if (!user) throw new AuthenticationError("You must be logged in!");
       try {
-        const team = await models.team.create({ ...args, owner: user.id });
-        models.channel.create({
-          name: "general",
-          teamId: team.id,
-          public: true,
+        const response = await models.sequelize.transaction(async () => {
+          const team = await models.team.create({ ...args, owner: user.id });
+          await models.channel.create({
+            name: "general",
+            teamId: team.id,
+            public: true,
+          });
+
+          return team;
         });
+        console.log(response);
         return {
           ok: true,
-          team: team,
+          team: response,
         };
       } catch (err) {
+        console.log(err);
         return {
           ok: false,
           errors: formatErrors(err),
