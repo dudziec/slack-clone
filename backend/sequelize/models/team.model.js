@@ -16,10 +16,6 @@ module.exports = (sequelize) => {
                 field: 'team_id',
             }
         });
-        Team.belongsTo(models.user, {
-            foreignKey: 'owner',
-        });
-
     };
     
     return Team;

@@ -6,6 +6,7 @@ import Register from "./Register";
 import Login from "./Login";
 import ViewTeam from "./ViewTeam";
 import CreateTeam from "./CreateTeam";
+import DirectMessages from "./DirectMessages";
 import decode from "jwt-decode";
 
 const isAuthenticated = () => {
@@ -50,6 +51,11 @@ export default () => (
         path="/view-team/:teamId?/:channelId?"
         exact
         component={ViewTeam}
+      />
+      <PrivateRoute
+        path="/view-team/user/:teamId/:userId"
+        exact
+        component={DirectMessages}
       />
       <PrivateRoute path="/create-team" exact component={CreateTeam} />
     </Switch>

@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Button, Form, Input } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { useMutation, gql } from "@apollo/client";
-import normalizeErrors from '../normalizeErrors'
+import normalizeErrors from "../normalizeErrors";
 
 const ADD_TEAM_MEMBER_MUTATION = gql`
   mutation addMember($email: String!, $teamId: Int!) {
@@ -17,33 +17,29 @@ const ADD_TEAM_MEMBER_MUTATION = gql`
 `;
 
 const InvitePeopleModal = ({ open, onClose, teamId }) => {
-  const [registerMutation ] = useMutation(ADD_TEAM_MEMBER_MUTATION);
+  const [registerMutation] = useMutation(ADD_TEAM_MEMBER_MUTATION);
 
   const formik = useFormik({
     initialValues: {
       name: "",
     },
-    onSubmit: async (values ) => {
-        const response = await registerMutation({
-            variables: {
-              teamId: teamId,
-              email: values.email,
-            },
-          });
+    onSubmit: async (values) => {
+      const response = await registerMutation({
+        variables: {
+          teamId: teamId,
+          email: values.email,
+        },
+      });
 
-          console.log(response);
-          
-          const { ok, errors } = response.data.addTeamMember;
+      const { ok, errors } = response.data.addTeamMember;
 
-          if(ok) {
-            onClose();
-          } else {
-            formik.setErrors(normalizeErrors(errors));
-          }
+      if (ok) {
+        onClose();
+      } else {
+        formik.setErrors(normalizeErrors(errors));
+      }
     },
   });
-
-  
 
   return (
     <Modal open={open} closeIcon onClose={onClose}>
@@ -58,10 +54,12 @@ const InvitePeopleModal = ({ open, onClose, teamId }) => {
               placeholder="Email"
             />
           </Form.Field>
-          {formik.touched.email && formik.errors.email ? formik.errors.email[0] : null}
+          {formik.touched.email && formik.errors.email
+            ? formik.errors.email[0]
+            : null}
           <Form.Group>
             <Button type="submit" onClick={formik.handleSubmit} primary fluid>
-              Create channel
+              Add member
             </Button>
             <Button negative fluid onClick={onClose}>
               Cancel

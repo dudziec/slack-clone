@@ -6,7 +6,6 @@ const ALL_MESSAGES_QUERY = gql`
       id
       text
       user {
-        id
         username
       }
       createdAt

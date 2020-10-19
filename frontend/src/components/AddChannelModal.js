@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Button, Form, Input } from "semantic-ui-react";
 import { useFormik } from "formik";
 import { useMutation, gql } from "@apollo/client";
-import { ALL_TEAMS_QUERY } from "../graphql/team";
+import { ME_QUERY } from "../graphql/me";
 import _, { findIndex } from "lodash";
 
 const ADD_CHANNEL_MUTATION = gql`
@@ -20,7 +20,7 @@ const ADD_CHANNEL_MUTATION = gql`
     }
   }
 `;
-
+/*  */
 const AddChannelModal = ({ open, onClose, teamId }) => {
   const [registerMutation, { client }] = useMutation(ADD_CHANNEL_MUTATION);
 
@@ -36,26 +36,23 @@ const AddChannelModal = ({ open, onClose, teamId }) => {
         },
       });
 
-      console.log(response);
-
       const {
         data: {
-          createChannel: { ok, channel, errors },
+          createChannel: { ok, channel },
         },
       } = response;
 
-      if(ok) {
-        const data = client.readQuery({ query: ALL_TEAMS_QUERY });
+      if (ok) {
+        const data = client.readQuery({ query: ME_QUERY });
         const writeData = _.cloneDeep(data);
-  
-        const teamIdx = findIndex(data.allTeams, ["id", teamId]);
-        writeData.allTeams[teamIdx].channels.push(channel);
-  
-        client.writeQuery({ query: ALL_TEAMS_QUERY, data: writeData });
-  
+
+        const teamIdx = findIndex(data.me.team, ["id", teamId]);
+        writeData.me.team[teamIdx].channels.push(channel);
+
+        client.writeQuery({ query: ME_QUERY, data: writeData });
+
         onClose();
       } else {
-        
       }
     },
   });

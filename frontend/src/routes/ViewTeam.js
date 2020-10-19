@@ -4,26 +4,37 @@ import MessageContainer from "../containers/MessageContainer";
 import AppLayout from "../components/AppLayout";
 import SendMessage from "../components/SendMessage";
 import SideBar from "../containers/Sidebar";
-import { ALL_TEAMS_QUERY } from "../graphql/team";
+import { ME_QUERY } from "../graphql/me";
 import { useQuery } from "@apollo/client";
 import _ from "lodash";
 import { Redirect } from "react-router-dom";
+import { gql, useMutation } from "@apollo/client";
+
+const ADD_MESSAGE_MUTATION = gql`
+  mutation($channelId: Int!, $text: String!) {
+    createMessage(channelId: $channelId, text: $text)
+  }
+`;
 
 const ViewTeam = ({
   match: {
     params: { teamId, channelId },
   },
 }) => {
-  const { loading, data } = useQuery(ALL_TEAMS_QUERY);
+  const [registerMutation] = useMutation(ADD_MESSAGE_MUTATION);
+
+  const { loading, data } = useQuery(ME_QUERY, {
+    options: {
+      fetchPolicy: "network-only",
+    },
+  });
 
   if (loading) {
     return null;
   }
 
-  const { allTeams, inviteTeams } = data;
+  const teams = data.me.team;
 
-  const teams = inviteTeams ? [...allTeams, ...inviteTeams] : allTeams;
-  
   // there is no team created
   if (!teams.length) {
     return <Redirect to="/create-team" />;
@@ -51,8 +62,15 @@ const ViewTeam = ({
 
   const channel = team.channels[currentChannelId];
 
+  const directMessageMembers = data.me.team[
+    teamIdx
+  ].directMessageMembers.filter(
+    (member) => member.username !== data.me.username
+  );
+
   return (
     <AppLayout>
+      <Header block>123 </Header>
       <SideBar
         currentTeamId={teamId}
         teams={teams.map((t) => ({
@@ -60,11 +78,29 @@ const ViewTeam = ({
           letter: t.name.charAt(0).toUpperCase(),
         }))}
         team={team}
+        directMessageMembers={directMessageMembers}
       />
       {channel && [
         <Header key="channel-view-header" channelName={channel.name} />,
-        <MessageContainer key="channel-view-messages" channelId={channel.id}/>,
-        <SendMessage key="channel-view-send" channel={channel} />,
+        <MessageContainer key="channel-view-messages" channelId={channel.id} />,
+        <SendMessage
+          onSubmit={async (values, { resetForm }) => {
+            if (!values.message || !values.message.trim()) {
+              return;
+            }
+
+            await registerMutation({
+              variables: {
+                text: values.message,
+                channelId: channel.id,
+              },
+            });
+
+            resetForm(true);
+          }}
+          key="channel-view-send"
+          placeholder={channel.name}
+        />,
       ]}
     </AppLayout>
   );

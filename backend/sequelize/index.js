@@ -1,6 +1,6 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('slack', 'postgres', 'damian123', {
+const sequelize = new Sequelize(process.env.TEST_DB || 'slack', 'postgres', 'damian123', {
     dialect: 'postgres',
 	port: '5432',
 	define: { underscored: true }
@@ -12,6 +12,7 @@ const modelDefiners = [
 	require('./models/message.model'),
 	require('./models/team.model'),
 	require('./models/member.model'),
+	require('./models/directMessage.model'),
 ];
 
 for (const modelDefiner of modelDefiners) {

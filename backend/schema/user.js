@@ -14,8 +14,9 @@ export default `
     }
 
     type Query {
-        getUser(id: Int!): User!,
-        allUsers: [User!]!,
+        me: User!,
+        allUsers: [User!]!
+        getUsername(id: Int!): String,
     }
 
     type RegisterResponse {

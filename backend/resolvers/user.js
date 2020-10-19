@@ -1,38 +1,54 @@
-import _ from 'lodash'
-import { tryLogin } from '../auth' 
-import formatErrors from '../formatErrors'
-
-// const formatErrors = (e, models) => {
-//     if (e.name === 'SequelizeValidationError') {
-//       return e.errors.map(x => _.pick(x, ['path', 'message']));
-//     }
-//     return [{ path: 'name', message: 'something went wrong' }];
-//   };
+import _ from "lodash";
+import { tryLogin } from "../auth";
+import formatErrors from "../formatErrors";
+import { AuthenticationError } from "apollo-server";
 
 export default {
-    Query: {
-        getUser: (parent, { id }, { models }) => models.user.findOne({ where: { id } }),
-        allUsers: (parent, args, { models }) => models.user.findAll(),
-    }, 
-    Mutation: {
-        login: (parent, {email, password}, {models, SECRET, SECRET2 }) => tryLogin(email, password, models, SECRET, SECRET2),
-        register: async (parent, args, {models}) => {
-            try { 
-                const createdUser = await models.user.create(args);
+  User: {
+    team: (parent, args, { models, user }) => {
+      return models.sequelize.query(
+        "select * from teams join members on teams.id = members.team_id where user_id = ?",
+        {
+          replacements: [user.id],
+          model: models.team,
+          raw: true,
+        }
+      );
+    },
+  },
+  Query: {
+    me: (parent, args, { models, user }) => {
+      if (!user) throw new AuthenticationError("You must be logged in!");
 
-                return {
-                    ok: true,
-                    user: createdUser,
-                } 
-                
-            } catch(err) {
-                console.log(err);
-                return {
-                    ok: false,
-                    errors: formatErrors(err, models),
-                }
-            }
-            return 
-        },
-    }
+      return models.user.findOne({ where: { id: user.id } });
+    },
+
+    getUsername: async (parent, { id }, { models, user }) => {
+        if(!user) throw new AuthenticationError("You must be logged in!");
+        const u = await models.user.findOne({where: id});
+        return u.username;
+    },
+    allUsers: (parent, args, { models }) => models.user.findAll(),
+  },
+  Mutation: {
+    login: (parent, { email, password }, { models, SECRET, SECRET2 }) =>
+      tryLogin(email, password, models, SECRET, SECRET2),
+    register: async (_, args, { models }) => {
+      try {
+        const createdUser = await models.user.create(args);
+
+        return {
+          ok: true,
+          user: createdUser,
+        };
+      } catch (err) {
+        console.log(err);
+        return {
+          ok: false,
+          errors: formatErrors(err, models),
+        };
+      }
+      return;
+    },
+  },
 };
