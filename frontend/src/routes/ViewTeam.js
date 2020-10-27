@@ -24,9 +24,7 @@ const ViewTeam = ({
   const [registerMutation] = useMutation(ADD_MESSAGE_MUTATION);
 
   const { loading, data } = useQuery(ME_QUERY, {
-    options: {
-      fetchPolicy: "network-only",
-    },
+    fetchPolicy: "network-only",
   });
 
   if (loading) {
