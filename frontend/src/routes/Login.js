@@ -89,7 +89,7 @@ const Login = () => {
               console.log("login.js");
               localStorage.setItem("token", token);
               localStorage.setItem("refreshToken", refreshToken);
-              history.push("/");
+              history.push("/view-team");
             } else {
               const err = {
                 emailError: "",
